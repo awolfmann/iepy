@@ -18,10 +18,10 @@ def dump_runner_output_to_csv(results, filepath):
 
     with open(filepath, "w", newline='') as filehandler:
         csv_writer = csv.writer(filehandler)
-        csv_writer.writerow(["Candidate evidence id", "Relation present"])
-        for prediction, value in results.items():
+        csv_writer.writerow(["Relation Name", "Candidate evidence id","Relation present"])
+        for relation, prediction, value in results:
             prediction_id = prediction.id
-            csv_writer.writerow([prediction_id, value])
+            csv_writer.writerow([relation, prediction_id, value])
 
 
 def dump_predictions_to_database(relation, predictions):

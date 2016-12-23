@@ -10,7 +10,7 @@ import iepy
 TokenToMatch = namedtuple("TokenToMatch", "token lemma pos kinds, is_subj is_obj")
 
 
-def rule(answer, priority=0):
+def rule(answer, relation_name, priority=0):
     if answer not in [False, True]:
         message = "Rule has invalid answer, it has to be either False or True"
         raise ValueError(message)
@@ -19,6 +19,7 @@ def rule(answer, priority=0):
         f.priority = priority
         f.is_rule = True
         f.answer = answer
+        f.relation_name = relation_name
         return f
     return inner
 

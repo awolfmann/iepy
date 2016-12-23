@@ -30,30 +30,37 @@ def run_from_command_line():
     logging.basicConfig(level=logging.INFO, format='%(message)s')
 
     try:
-        relation_name = iepy.instance.rules.RELATION
+        relations_names = iepy.instance.rules.RELATIONS
     except AttributeError:
-        logging.error("RELATION not defined in rules file")
-        sys.exit(1)
-
-    try:
-        relation = models.Relation.objects.get(name=relation_name)
-    except ObjectDoesNotExist:
-        logging.error("Relation {!r} not found".format(relation_name))
+        logging.error("RELATIONS not defined in rules file")
         sys.exit(1)
 
     # Load rules
     rules = load_rules()
 
-    # Load evidences
-    evidences = CandidateEvidenceManager.candidates_for_relation(relation)
+    results = []
 
-    # Run the pipeline
-    iextractor = RuleBasedCore(relation, rules)
-    iextractor.start()
-    iextractor.process()
-    predictions = iextractor.predict(evidences)
-    output.dump_output_loop(predictions)
+    for relation_name in relations_names:
+        try:
+            relation = models.Relation.objects.get(name=relation_name)
+        except ObjectDoesNotExist:
+            logging.error("Relation {!r} not found".format(relation_name))
+            sys.exit(1)
 
+        # Load evidences
+        evidences = CandidateEvidenceManager.candidates_for_relation(relation)
+
+        related_rules = [rule for rule in rules if rule.relation_name == relation_name]
+
+        # Run the pipeline
+        iextractor = RuleBasedCore(relation, related_rules)
+        iextractor.start()
+        iextractor.process()
+        predictions = iextractor.predict(evidences)
+        results += [(relation_name,) + p for p in predictions.items()]
+
+    # save results in a file
+    output.dump_output_loop(results)
 
 if __name__ == u'__main__':
     run_from_command_line()
