@@ -119,9 +119,12 @@ class IEDocument(BaseModel):
         for i, end in enumerate(sentences[1:]):
             if enriched:
                 rich_tokens = []
-                for i, (token, lemma, postag) in enumerate(zip(
-                    tokens[start:end], lemmas[start:end], postags[start:end]
-                )):
+                for i, token in enumerate(tokens[start:end]):
+                # for i, (token, lemma, postag) in enumerate(zip(
+                #     tokens[start:end], lemmas[start:end], postags[start:end]
+                # )):
+                    lemma = token
+                    postag = 'X'
                     tkn_eos = [eo for eo in eos if eo.offset <= tkn_offset < eo.offset_end]
                     rich_tokens.append(RichToken(
                         token=token,
@@ -385,7 +388,8 @@ class TextSegment(BaseModel):
             self.text = ""
         self.sentences = [i - self.offset for i in doc.sentences
                           if i >= self.offset and i < self.offset_end]
-        self.syntactic_sentences = [doc.syntactic_sentences[s] for s in self.sentences]
+        # import pdb; pdb.set_trace()
+        # self.syntactic_sentences = [doc.syntactic_sentences[s] for s in self.sentences]
         self._hydrated = True
         return self
 
@@ -439,7 +443,10 @@ class TextSegment(BaseModel):
         translation_dict = {'-LRB-': '(',
                             '-RRB-': ')'}
         eos = list(self.get_entity_occurrences())
-        for tkn_offset, (tkn, lemma, postag) in enumerate(zip(self.tokens, self.lemmas, self.postags)):
+        for tkn_offset, tkn in enumerate(self.tokens):
+        # for tkn_offset, (tkn, lemma, postag) in enumerate(zip(self.tokens, self.lemmas, self.postags)):
+            lemma = tkn
+            postag = 'X'
             tkn_eos = [eo for eo in eos
                        if eo.segment_offset <= tkn_offset < eo.segment_offset_end]
             yield RichToken(

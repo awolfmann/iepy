@@ -10,7 +10,8 @@ class BaseNERRunner(BasePreProcessStepRunner):
     step = PreProcessSteps.ner
 
     def __init__(self, override=False):
-        self.override = override
+        # self.override = override
+        super(BaseNERRunner, self).__init__(override=override)
 
     def ok_for_running(self, doc):
         if not doc.was_preprocess_step_done(PreProcessSteps.sentencer):

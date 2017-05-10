@@ -20,6 +20,7 @@ class SyntacticSegmenterRunner(BasePreProcessStepRunner):
             return
         if self.increment or self.override or not was_done(self.step):
             segments = self.build_syntactic_segments(doc)
+            # print('SEGMENTS:', segments)
             doc.set_segmentation_result(
                 segments, override=self.override, increment=self.increment)
             doc.save()

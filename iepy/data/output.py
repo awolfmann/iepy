@@ -47,6 +47,23 @@ def dump_output_loop(predictions):
         except FileNotFoundError:
             print("Error: couldn't open the file, try another one.\n")
 
+def dump_output_loop_relation(predictions, relation_name):
+    """
+    Ask the user the filepat to store the runner's result.
+    If the file already exists keeps asking until it gets an answer
+    """
+
+    while True:
+        output_filepath = 'relations/'+ relation_name + '.csv'
+        
+        try:
+            dump_runner_output_to_csv(predictions, output_filepath)
+            break
+        except ValueError:
+            print("Error: file already exists, try another one.\n")
+        except FileNotFoundError:
+            print("Error: couldn't open the file, try another one.\n")
+
 
 def dump_classifier_loop(extractor):
     """

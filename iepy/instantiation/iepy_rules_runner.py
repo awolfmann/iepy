@@ -45,7 +45,8 @@ def run_from_command_line():
             relation = models.Relation.objects.get(name=relation_name)
         except ObjectDoesNotExist:
             logging.error("Relation {!r} not found".format(relation_name))
-            sys.exit(1)
+            sys.exit(1)        
+
 
         # Load evidences
         evidences = CandidateEvidenceManager.candidates_for_relation(relation)
@@ -57,10 +58,35 @@ def run_from_command_line():
         iextractor.start()
         iextractor.process()
         predictions = iextractor.predict(evidences)
-        results += [(relation_name,) + p for p in predictions.items()]
-
-    # save results in a file
+        results += [(relation_name,) + p  for p in predictions.items()]
+    
     output.dump_output_loop(results)
+
+    try:
+        relation_name = iepy.instance.rules.RELATIONS
+    except AttributeError:
+        logging.error("RELATIONS not defined in rules file")
+        sys.exit(1)
+
+    try:
+        relation = models.Relation.objects.get(name=relation_name)
+    except ObjectDoesNotExist:
+        logging.error("Relation {!r} not found".format(relation_name))
+        sys.exit(1)
+
+    # Load rules
+    rules = load_rules()
+
+    # Load evidences
+    evidences = CandidateEvidenceManager.candidates_for_relation(relation)
+
+    # Run the pipeline
+    iextractor = RuleBasedCore(relation, rules)
+    iextractor.start()
+    iextractor.process()
+    predictions = iextractor.predict(evidences)
+    output.dump_output_loop(predictions)
+
 
 if __name__ == u'__main__':
     run_from_command_line()

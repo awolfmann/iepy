@@ -41,7 +41,17 @@ class TokenizeSentencerRunner(BasePreProcessStepRunner):
             result = en_tokenize_and_segment(doc.text)
             doc.set_tokenization_result(
                 list(zip(result['spans'], result['tokens'])))
-            doc.set_sentencer_result(result['sentences'])
+            #doc.set_sentencer_result(result['sentences'])
+            articulo_keywords = ['ART','ARTfCULO', 'ART[CULO', 'ARTiCULO', 'ART(CULO',
+                                'ARTÍCULO', 'ARTICULO']
+            articulo_ls = [0]
+            for i, token in enumerate(doc.tokens):
+                if token in articulo_keywords:
+                    articulo_ls.append(i)
+            articulo_ls.append(len(doc.tokens))
+            doc.set_sentencer_result(articulo_ls)
+            # doc.set_sentencer_result([0, len(doc.tokens)])
+            #doc.set_syntactic_parsing_result(['()']) poner algo valido aca
             doc.save()
 
 
@@ -81,6 +91,22 @@ def _split_in_sentences(text):
     for i, j in sentence_splitter.span_tokenize(text):
         yield i, j, text[i:j]
 
+# def _split_in_articles(text):
+#     articulo_keywords = ['ARTfCULO', 'ART[CULO', 'ARTiCULO', 'ART(CULO',
+#         'ARTÍCULO', 'ARTICULO']
+#     # intermediate = [text]
+#     # for keyword in articulo_keywords:
+#     #     splitted = []
+#     #     for result in intermediate:
+#     #         splitted +=  result.split(keyword)
+#     #     intermediate = splitted
+#     # return intermediate
+#     segments = [0]
+#     for i, word in enumerate(text.split())
+#         if word in articulo_keywords:
+#             segments.append(i)
+#     segments.append(len(text.split()))
+    
 
 ###
 ### English tokenizer using regular expressions

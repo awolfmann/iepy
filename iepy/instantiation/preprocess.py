@@ -21,7 +21,7 @@ import iepy
 import multiprocessing
 iepy.setup(__file__)
 from iepy.data.db import DocumentManager
-from iepy.preprocess.stanford_preprocess import StanfordPreprocess
+# from iepy.preprocess.stanford_preprocess import StanfordPreprocess
 from iepy.preprocess.pipeline import PreProcessPipeline, PreProcessSteps
 from iepy.preprocess.segmenter import SyntacticSegmenterRunner
 
@@ -35,11 +35,12 @@ class ParallelDocManager(DocumentManager):
         return qset.extra(where=[clause])
 
 def start_preprocess(docs, increment_ner):
-    pipeline = PreProcessPipeline([
-        StanfordPreprocess(increment_ner),
-        SyntacticSegmenterRunner(increment=True)
-    ], docs)
-    pipeline.process_everything()
+    # pipeline = PreProcessPipeline([
+    #     StanfordPreprocess(increment_ner),
+    #     SyntacticSegmenterRunner(increment=True)
+    # ], docs)
+    # pipeline.process_everything()
+    pass
 
 if __name__ == '__main__':
     logger = logging.getLogger(u'preprocess')

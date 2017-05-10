@@ -32,6 +32,7 @@ def is_rule(fun):
 
 def load_rules():
     result = []
+    # print('dir(iepy.instance.rules)', dir(iepy.instance.rules))
     for attr_name in dir(iepy.instance.rules):
         attr = getattr(iepy.instance.rules, attr_name)
         if is_rule(attr):
@@ -83,6 +84,26 @@ class Kind(refo.Predicate):
         if hasattr(obj, "kinds"):
             return self.kind in obj.kinds
         return False
+
+
+class NoKind(refo.Predicate):
+    # kinds is a list 
+    def __init__(self, kinds):
+        self.kinds = kinds
+        super().__init__(self._predicate)
+        self.arg = kinds
+
+    def _predicate(self, obj):
+        if hasattr(obj, "kinds"):
+            if self.kinds:
+                pred = True
+                for kind in self.kinds:
+                    if kind in obj.kinds:
+                        pred = False
+                return pred
+            else:
+                return len(obj.kinds) == 0
+        return True
 
 
 class ConditionPredicate(refo.Predicate):
